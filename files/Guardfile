@@ -1,0 +1,41 @@
+# vim: ft=ruby
+clearing :off
+interactor :off
+
+guard :bundler do
+  watch('Gemfile')
+  watch('Gemfile.lock')
+end
+
+guard :rails, host: '0.0.0.0' do
+  watch('Gemfile.lock')
+  watch(%r{^config/.*\.rb$})
+  watch(%r{^config/[^/]\.yml$})
+  watch(%r{^lib/.*\.rb$})
+  ignore(%r{config/routes\.rb})
+  callback(:start_begin) do
+    `bundle exec spring stop && bundle exec rake tmp:cache:clear`
+  end
+end
+
+guard :sidekiq, environment: 'development', config: 'config/sidekiq.yml' do
+  watch('Gemfile.lock')
+  watch(%r{^config/.*\.rb$})
+  watch(%r{^config/[^/]\.yml$})
+  watch(%r{^lib/.*\.rb$})
+  watch(%r{^app/jobs/.*\.rb$})
+  watch(%r{^app/workers/.*\.rb$})
+  ignore(%r{config/routes\.rb})
+end
+
+guard :minitest, spring: 'bin/rake test', all_on_start: false, all_after_pass: false, env: { COV: 'skip' } do
+  watch(%r{^app/(.+)\.rb$})                               { |m| "test/#{m[1]}_test.rb" }
+  watch(%r{^app/controllers/application_controller\.rb$}) { 'test/controllers' }
+  watch(%r{^app/controllers/(.+)_controller\.rb$})        { |m| "test/integration/#{m[1]}_test.rb" }
+  watch(%r{^app/views/(.+)_mailer/.+})                    { |m| "test/mailers/#{m[1]}_mailer_test.rb" }
+  watch(%r{^lib/(.+)\.rb$})                               { |m| "test/lib/#{m[1]}_test.rb" }
+  watch(%r{^test/.+_test\.rb$})
+  watch(%r{^test/test_helper\.rb$}) { 'test' }
+  watch(%r{^config/locales/.+}) { 'test/integration/i18n_test.rb' }
+  watch(%r{^app/locales/.+}) { 'test/integration/i18n_test.rb' }
+end

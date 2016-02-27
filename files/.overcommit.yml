@@ -1,0 +1,8 @@
+PreCommit:
+  RuboCop:
+    enabled: true
+    command: ['bundle', 'exec', 'rubocop']
+
+  SlimLint:
+    enabled: true
+    command: ['bundle', 'exec', 'slim-lint']

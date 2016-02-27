@@ -1,0 +1,12 @@
+doctype 5
+html(class="#{controller_path.tr('/', '-')}-controller #{action_name}-action")
+  head
+    meta(charset='UTF-8')
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no")
+    = display_meta_tags(default_meta_tags)
+    = stylesheet_link_tag 'application', media: 'all', debug: false
+    = javascript_include_tag 'application', debug: false, defer: true
+    = csrf_meta_tags
+  body
+    = yield

@@ -1,0 +1,11 @@
+---
+:concurrency: 5
+:pidfile: ./tmp/pids/sidekiq.pid
+:logfile:
+development:
+test:
+production:
+  :concurrency: 2
+:queues:
+  - default
+  - mailers

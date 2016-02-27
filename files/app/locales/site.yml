@@ -1,0 +1,3 @@
+ja:
+  site:
+    name: <%= app_name %>

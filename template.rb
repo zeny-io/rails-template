@@ -90,9 +90,15 @@ cwd = File.expand_path(File.dirname(__FILE__))
 files_root = File.join(cwd, 'files')
 
 Dir.glob(File.join(files_root, '**', '*'), File::FNM_DOTMATCH).each do |path|
+  next unless File.file?(path)
+
   dest_path = path.sub("#{files_root}/", '')
 
-  template path, dest_path, force: true
+  if path.include?('lib/templates')
+    file dest_path, File.read(path), force: true
+  else
+    template path, dest_path, force: true
+  end
 end
 
 gemfile = File.read(File.join(destination_root, 'Gemfile'))
@@ -100,9 +106,7 @@ gemfile = gemfile.gsub(%r{\s*#.*$}, '').gsub(%r{\n+}, "\n")
 file('Gemfile', gemfile, force: true)
 
 unless options[:skip_git]
-  append_to_file('.gitignore', '/node_modules')
-  append_to_file('.gitignore', '.DS_Store')
-  append_to_file('.gitignore', '/coverage')
+  append_to_file('.gitignore', %w(/node_modules .DS_Store /coverage).join("\n"))
 end
 
 file 'app/locales/.keep', ''

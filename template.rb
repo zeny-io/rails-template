@@ -92,14 +92,18 @@ files_root = File.join(cwd, 'files')
 Dir.glob(File.join(files_root, '**', '*'), File::FNM_DOTMATCH).each do |path|
   dest_path = path.sub("#{files_root}/", '')
 
-  template path, dest_path, force: !options[:skip_test_unit] if File.file?(path)
+  template path, dest_path, force: true
 end
 
 gemfile = File.read(File.join(destination_root, 'Gemfile'))
 gemfile = gemfile.gsub(%r{\s*#.*$}, '').gsub(%r{\n+}, "\n")
 file('Gemfile', gemfile, force: true)
 
-append_to_file('.gitignore', '/node_modules') unless options[:skip_git]
+unless options[:skip_git]
+  append_to_file('.gitignore', '/node_modules')
+  append_to_file('.gitignore', '.DS_Store')
+  append_to_file('.gitignore', '/coverage')
+end
 
 file 'app/locales/.keep', ''
 file 'app/serializers/.keep', ''
